@@ -1,0 +1,203 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ivory: #fbf6ec;
+  --ivory-deep: #f4ead6;
+  --gold: #c9a24b;
+  --gold-light: #e7c878;
+  --gold-deep: #a67c28;
+  --blush: #e5a6a6;
+  --maroon: #7c2b33;
+  --royal: #25406b;
+  --sage: #7c8c6a;
+  --ink: #3a2a22;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--ivory);
+    color: var(--ink);
+    font-family: 'Mukta', system-ui, sans-serif;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 500;
+  }
+
+  /* Never allow horizontal scroll on mobile */
+  #root {
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  ::selection {
+    background: rgba(201, 162, 75, 0.28);
+    color: var(--maroon);
+  }
+
+  /* Elegant gold scrollbar (desktop) */
+  @media (min-width: 1024px) {
+    ::-webkit-scrollbar { width: 10px; }
+    ::-webkit-scrollbar-track { background: var(--ivory-deep); }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(var(--gold-light), var(--gold-deep));
+      border-radius: 20px;
+      border: 2px solid var(--ivory-deep);
+    }
+  }
+}
+
+@layer components {
+  /* Display serif with a warm gold-to-maroon gradient */
+  .font-script {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+
+  .text-gradient-gold {
+    background: linear-gradient(
+      120deg,
+      #a67c28 0%,
+      #e7c878 35%,
+      #fff3d4 50%,
+      #c9a24b 65%,
+      #a67c28 100%
+    );
+    background-size: 220% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    animation: gold-sheen 6s linear infinite;
+  }
+
+  @keyframes gold-sheen {
+    to {
+      background-position: 220% center;
+    }
+  }
+
+  /* Gentle floating for decorative ornaments */
+  .animate-float {
+    animation: soft-float 5s ease-in-out infinite;
+  }
+  @keyframes soft-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  .text-shadow-soft {
+    text-shadow: 0 2px 20px rgba(58, 42, 34, 0.25);
+  }
+
+  /* Thin gold rule with a centred ornament */
+  .gold-hairline {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(201, 162, 75, 0.15) 15%,
+      rgba(201, 162, 75, 0.7) 50%,
+      rgba(201, 162, 75, 0.15) 85%,
+      transparent
+    );
+  }
+
+  .btn-gold {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.85rem 2rem;
+    border-radius: 999px;
+    font-family: 'Mukta', sans-serif;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    color: #fff8ec;
+    background: linear-gradient(120deg, #b98a2f, #e7c878 50%, #b98a2f);
+    background-size: 200% auto;
+    box-shadow: 0 10px 30px -10px rgba(166, 124, 40, 0.6);
+    transition: background-position 0.6s ease, transform 0.35s ease, box-shadow 0.35s ease;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-gold:hover {
+    background-position: right center;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px -12px rgba(166, 124, 40, 0.7);
+  }
+  .btn-gold:focus-visible {
+    outline: 2px solid var(--gold-deep);
+    outline-offset: 3px;
+  }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.8rem 1.9rem;
+    border-radius: 999px;
+    font-family: 'Mukta', sans-serif;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    color: var(--maroon);
+    background: transparent;
+    border: 1px solid rgba(166, 124, 40, 0.5);
+    transition: background 0.35s ease, color 0.35s ease, transform 0.35s ease;
+    cursor: pointer;
+  }
+  .btn-outline:hover {
+    background: rgba(201, 162, 75, 0.12);
+    transform: translateY(-2px);
+  }
+
+  .eyebrow {
+    font-family: 'Mukta', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    font-size: 0.7rem;
+    color: var(--gold-deep);
+  }
+
+  /* Soft paper texture veil */
+  .paper-veil::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(201, 162, 75, 0.06) 1px, transparent 1px);
+    background-size: 22px 22px;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+/* Reduced-motion: quiet everything decorative */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .petal-layer { display: none !important; }
+}
