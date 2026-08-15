@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 import { useResponsive } from '../../hooks/useResponsive';
 import './petals.css';
@@ -14,42 +14,91 @@ const PETAL_COLORS = [
   ['#f7e6c4', '#e7c878'], // marigold gold
   ['#fdf6ec', '#f0e2c8'], // jasmine ivory
   ['#eab8b0', '#c9757c'], // deep rose
+  ['#ffd166', '#f4a300'], // sunflower orange
+  ['#f7b2d9', '#e0559c'], // hot pink
+  ['#c9a6f7', '#9b5de5'], // orchid purple
+  ['#ff9b85', '#e8542a'], // tangerine
+  ['#a8e6cf', '#4fb286'], // fresh mint
+  ['#ffe0f0', '#ff7aa8'], // candy pink
 ];
 
+function randomSeed(i, count) {
+  return {
+    left: (i / count) * 100 + (Math.random() * 8 - 4),
+    delay: Math.random() * 14,
+    duration: 12 + Math.random() * 12,
+    size: 10 + Math.random() * 12,
+    drift: (Math.random() * 2 - 1) * 60,
+    rotate: Math.random() * 360,
+  };
+}
+
 function Petal({ i, count }) {
-  const left = (i / count) * 100 + (Math.random() * 8 - 4);
-  const delay = Math.random() * 14;
-  const duration = 12 + Math.random() * 12;
-  const size = 10 + Math.random() * 12;
-  const drift = (Math.random() * 2 - 1) * 60;
-  const [c1, c2] = PETAL_COLORS[i % PETAL_COLORS.length];
-  const rotate = Math.random() * 360;
+  const [gen, setGen] = useState(0);
+  const [popped, setPopped] = useState(false);
+  const seed = useMemo(() => randomSeed(i, count), [i, count, gen]);
+  const [c1, c2] = PETAL_COLORS[(i + gen) % PETAL_COLORS.length];
+  const gid = `pg-${i}-${gen}`;
 
   const style = {
-    left: `${left}%`,
-    width: `${size}px`,
-    height: `${size * 1.3}px`,
-    animationDelay: `${delay}s`,
-    animationDuration: `${duration}s`,
-    '--drift': `${drift}px`,
-    '--rot': `${rotate}deg`,
+    left: `${seed.left}%`,
+    width: `${seed.size}px`,
+    height: `${seed.size * 1.3}px`,
+    animationDelay: popped ? '0s' : `${seed.delay}s`,
+    animationDuration: popped ? '0.6s' : `${seed.duration}s`,
+    '--drift': `${seed.drift}px`,
+    '--rot': `${seed.rotate}deg`,
   };
 
+  const handleClick = useCallback(
+    (e) => {
+      e.stopPropagation();
+      if (!popped) setPopped(true);
+    },
+    [popped]
+  );
+
+  // Only the finite "pop" animation fires animationend (the endless fall
+  // animation never does), so this safely re-spawns just the popped petal.
+  const handleAnimEnd = useCallback(() => {
+    if (popped) {
+      setPopped(false);
+      setGen((g) => g + 1);
+    }
+  }, [popped]);
+
   return (
-    <span className="petal" style={style} aria-hidden="true">
+    <span
+      className={`petal${popped ? ' petal-pop' : ''}`}
+      style={style}
+      onClick={handleClick}
+      onAnimationEnd={handleAnimEnd}
+      aria-hidden="true"
+    >
       <svg viewBox="0 0 20 26" width="100%" height="100%">
         <defs>
-          <linearGradient id={`pg-${i}`} x1="0" y1="0" x2="1" y2="1">
+          <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
             <stop offset="0%" stopColor={c1} />
             <stop offset="100%" stopColor={c2} />
           </linearGradient>
         </defs>
         <path
           d="M10 0C4 6 0 12 0 17c0 5 4 9 10 9s10-4 10-9c0-5-4-11-10-17Z"
-          fill={`url(#pg-${i})`}
+          fill={`url(#${gid})`}
           opacity="0.9"
         />
       </svg>
+      {popped && (
+        <span className="petal-sparks" aria-hidden="true">
+          {Array.from({ length: 6 }).map((_, s) => (
+            <span
+              key={s}
+              className="petal-spark"
+              style={{ '--sa': `${(s / 6) * 360}deg` }}
+            />
+          ))}
+        </span>
+      )}
     </span>
   );
 }

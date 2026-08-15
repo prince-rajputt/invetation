@@ -11,11 +11,63 @@
   top: -6%;
   display: block;
   opacity: 0;
+  pointer-events: auto;
+  cursor: pointer;
   will-change: transform, opacity;
   filter: drop-shadow(0 4px 6px rgba(124, 43, 51, 0.12));
   animation-name: petal-fall;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+}
+
+.petal.petal-pop {
+  animation-name: petal-pop;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  animation-iteration-count: 1;
+}
+
+@keyframes petal-pop {
+  0% {
+    transform: scale(1) rotate(var(--rot));
+    opacity: 0.95;
+  }
+  35% {
+    transform: scale(1.6) rotate(calc(var(--rot) + 60deg));
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.1) rotate(calc(var(--rot) + 220deg));
+    opacity: 0;
+  }
+}
+
+.petal-sparks {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.petal-spark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff8ea, #e7c878 70%);
+  transform: translate(-50%, -50%);
+  animation: petal-spark-fly 0.55s ease-out forwards;
+}
+
+@keyframes petal-spark-fly {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--sa)) translateY(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--sa)) translateY(-28px) scale(0);
+    opacity: 0;
+  }
 }
 
 @keyframes petal-fall {

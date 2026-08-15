@@ -27,6 +27,9 @@ export const assets = {
     cornerFloral: `${base}img/corner-floral.webp`,
     patternPaisley: `${base}img/pattern-paisley.webp`,
     patternPaisleyTall: `${base}img/pattern-paisley-tall.webp`,
+    galleryMehendiSangeet: `${base}img/gallery-mehendi-sangeet.webp`,
+    galleryCoupleRoses: `${base}img/gallery-couple-roses.webp`,
+    logo: `${base}img/logo.webp`,
   },
 };
 

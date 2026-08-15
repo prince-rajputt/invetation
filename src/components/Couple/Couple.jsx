@@ -4,6 +4,7 @@ import { assets } from '../../data/assets';
 import SectionDivider from '../DecorativeElements/SectionDivider';
 import { CornerBracket, LotusMark } from '../DecorativeElements/Ornaments';
 import Reveal from '../common/Reveal';
+import TiltCard from '../Interactions/TiltCard';
 
 /** Framed portrait card with floral gold corners and soft zoom on hover. */
 function PersonCard({ person, image, imageAlt, flip }) {
@@ -29,7 +30,10 @@ function PersonCard({ person, image, imageAlt, flip }) {
           className="pointer-events-none absolute -bottom-2.5 -right-2.5 h-9 w-9 scale-[-1] text-gold sm:h-[54px] sm:w-[54px]"
           size={54}
         />
-        <div className="relative aspect-[4/5] overflow-hidden rounded-[1.4rem] border border-gold/40 shadow-soft">
+        <TiltCard
+          className="aspect-[4/5] overflow-hidden rounded-[1.4rem] border border-gold/40 shadow-soft"
+          max={5}
+        >
           <img
             src={image}
             alt={imageAlt}
@@ -37,7 +41,7 @@ function PersonCard({ person, image, imageAlt, flip }) {
             className="h-full w-full object-cover object-top transition-transform duration-[1400ms] ease-out group-hover:scale-105"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-maroon/25 via-transparent to-transparent" />
-        </div>
+        </TiltCard>
       </div>
 
       {/* Text */}

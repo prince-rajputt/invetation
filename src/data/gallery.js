@@ -21,8 +21,8 @@ export const gallery = [
   },
   {
     id: 'g3',
-    src: assets.images.couplePortrait,
-    alt: 'A couple in silhouette at golden hour',
+    src: assets.images.galleryCoupleRoses,
+    alt: 'A couple sharing a kiss beside a wall of red roses',
     caption: 'Golden Hour',
     span: 'normal',
   },
@@ -56,9 +56,9 @@ export const gallery = [
   },
   {
     id: 'g8',
-    src: assets.images.floralBouquet,
-    alt: 'A bouquet of blush and burgundy roses',
-    caption: 'Blooms of Blessing',
+    src: assets.images.galleryMehendiSangeet,
+    alt: 'Joyful guests singing and dancing together at the sangeet',
+    caption: 'Dance & Delight',
     span: 'normal',
   },
 ];

@@ -111,6 +111,22 @@ export default function WeddingHero() {
               {wedding.venue.name} · {wedding.venue.city}
             </span>
           </div>
+
+          {/* Vendor credit */}
+          <motion.div
+            className="mx-auto mt-6 flex flex-col items-center gap-1.5"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.3, duration: 0.9, ease }}
+          >
+            <span className="h-px w-10 bg-gold/30" />
+            <p className="text-[9px] uppercase tracking-[0.25em] text-ink/45 sm:text-[10px]">
+              Planned by
+            </p>
+            <div className="rounded-full border border-gold/25 bg-ivory/80 px-3 py-1 shadow-gold backdrop-blur-sm">
+              <img src={assets.images.logo} alt="Fab Eventz logo" className="h-7 w-auto sm:h-8" />
+            </div>
+          </motion.div>
         </motion.div>
       </motion.div>
 

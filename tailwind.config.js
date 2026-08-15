@@ -34,6 +34,11 @@ export default {
           DEFAULT: '#7C8C6A',
           deep: '#5C6B4C',
         },
+        violet: {
+          DEFAULT: '#8E6BA8',
+          light: '#C7ACDA',
+          deep: '#5B3E73',
+        },
         ink: '#3A2A22',
       },
       fontFamily: {

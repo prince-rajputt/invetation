@@ -4,6 +4,7 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { gallery } from '../../data/gallery';
 import SectionDivider from '../DecorativeElements/SectionDivider';
 import Reveal from '../common/Reveal';
+import TiltCard from '../Interactions/TiltCard';
 
 const SPAN = {
   wide: 'sm:col-span-2',
@@ -78,16 +79,18 @@ export default function Gallery() {
               className={`group relative overflow-hidden rounded-2xl border border-gold/30 shadow-soft ${SPAN[item.span] || ''}`}
               aria-label={`View ${item.caption}`}
             >
-              <img
-                src={item.src}
-                alt={item.alt}
-                loading="lazy"
-                className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-maroon/60 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-              <span className="absolute bottom-3 left-3 translate-y-2 font-script text-lg italic text-ivory opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                {item.caption}
-              </span>
+              <TiltCard className="h-full w-full" max={6}>
+                <img
+                  src={item.src}
+                  alt={item.alt}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-maroon/60 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                <span className="absolute bottom-3 left-3 translate-y-2 font-script text-lg italic text-ivory opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                  {item.caption}
+                </span>
+              </TiltCard>
             </Reveal>
           ))}
         </div>

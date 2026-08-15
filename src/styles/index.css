@@ -134,14 +134,33 @@
     background: linear-gradient(120deg, #b98a2f, #e7c878 50%, #b98a2f);
     background-size: 200% auto;
     box-shadow: 0 10px 30px -10px rgba(166, 124, 40, 0.6);
-    transition: background-position 0.6s ease, transform 0.35s ease, box-shadow 0.35s ease;
+    transition: background-position 0.6s ease, transform 0.25s ease, box-shadow 0.35s ease;
     border: none;
     cursor: pointer;
+    overflow: hidden;
+  }
+  .btn-gold::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 40%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.75s ease;
+    pointer-events: none;
   }
   .btn-gold:hover {
     background-position: right center;
     transform: translateY(-2px);
     box-shadow: 0 16px 40px -12px rgba(166, 124, 40, 0.7);
+  }
+  .btn-gold:hover::after {
+    left: 130%;
+  }
+  .btn-gold:active {
+    transform: translateY(-1px) scale(0.97);
   }
   .btn-gold:focus-visible {
     outline: 2px solid var(--gold-deep);
@@ -161,12 +180,15 @@
     color: var(--maroon);
     background: transparent;
     border: 1px solid rgba(166, 124, 40, 0.5);
-    transition: background 0.35s ease, color 0.35s ease, transform 0.35s ease;
+    transition: background 0.35s ease, color 0.35s ease, transform 0.25s ease;
     cursor: pointer;
   }
   .btn-outline:hover {
     background: rgba(201, 162, 75, 0.12);
     transform: translateY(-2px);
+  }
+  .btn-outline:active {
+    transform: translateY(-1px) scale(0.97);
   }
 
   .eyebrow {

@@ -130,10 +130,11 @@ export default function TapBurst() {
   const reduced = useReducedMotion();
   const [bursts, setBursts] = useState([]);
   const lastRef = useRef(0);
+  const touchingRef = useRef(false);
 
-  const spawn = useCallback((clientX, clientY) => {
+  const spawn = useCallback((clientX, clientY, minGap) => {
     const now = performance.now();
-    if (now - lastRef.current < 70) return; // throttle rapid swipes
+    if (now - lastRef.current < minGap) return; // throttle rapid swipes
     lastRef.current = now;
     const id = ++uid;
     // keep at most ~8 live bursts
@@ -142,13 +143,32 @@ export default function TapBurst() {
 
   useEffect(() => {
     if (reduced) return;
+
     const onDown = (e) => {
       const p = e.touches ? e.touches[0] : e;
-      if (p) spawn(p.clientX, p.clientY);
+      if (!p) return;
+      if (e.pointerType === 'touch' || e.touches) touchingRef.current = true;
+      spawn(p.clientX, p.clientY, 70);
     };
+    const onUp = () => {
+      touchingRef.current = false;
+    };
+    // While a finger is dragging to scroll, sprinkle petals along the path.
+    const onTouchMove = (e) => {
+      if (!touchingRef.current) return;
+      const p = e.touches && e.touches[0];
+      if (p) spawn(p.clientX, p.clientY, 140);
+    };
+
     // pointerdown covers mouse + touch + pen in one event
     window.addEventListener('pointerdown', onDown, { passive: true });
-    return () => window.removeEventListener('pointerdown', onDown);
+    window.addEventListener('pointerup', onUp, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    return () => {
+      window.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('touchmove', onTouchMove);
+    };
   }, [reduced, spawn]);
 
   const remove = useCallback(

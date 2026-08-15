@@ -42,6 +42,13 @@ export default function Footer() {
           Made with <Heart size={12} className="text-blush" fill="currentColor" /> for our loved ones
         </p>
         <p className="mt-1 text-xs text-ivory/35">{wedding.contact.hashtag}</p>
+
+        <div className="mx-auto mt-8 flex flex-col items-center gap-2 opacity-80">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-ivory/40">Planned by</p>
+          <div className="rounded-lg bg-ivory/90 px-3 py-1.5">
+            <img src={assets.images.logo} alt="Fab Eventz logo" className="h-9 w-auto" loading="lazy" />
+          </div>
+        </div>
       </div>
     </footer>
   );

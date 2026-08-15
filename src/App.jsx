@@ -46,7 +46,7 @@ export default function App() {
       {introDone && (
         <>
           <FloatingNav />
-          <FallingPetals density={0.9} />
+          <FallingPetals density={2} />
           <TapBurst />
           <CursorGlow />
 

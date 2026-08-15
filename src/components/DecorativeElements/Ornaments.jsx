@@ -1,7 +1,22 @@
+import { motion } from 'framer-motion';
+
 /**
  * Reusable SVG ornaments — inline so they inherit currentColor and stay
  * crisp at any size. Lightweight (no image requests).
  */
+
+/** Draw-in variant for a stroked path: animates from invisible to its final opacity. */
+const draw = (targetOpacity = 1, delay = 0) => ({
+  hidden: { pathLength: 0, opacity: 0 },
+  visible: {
+    pathLength: 1,
+    opacity: targetOpacity,
+    transition: {
+      pathLength: { duration: 1.1, ease: [0.22, 1, 0.36, 1], delay },
+      opacity: { duration: 0.5, delay },
+    },
+  },
+});
 
 /** A small lotus / diamond motif used to centre divider rules. */
 export function LotusMark({ className = '', size = 34 }) {
@@ -26,27 +41,40 @@ export function LotusMark({ className = '', size = 34 }) {
   );
 }
 
-/** Horizontal flourish that trails off to both sides. */
+/** Horizontal flourish that trails off to both sides. Draws itself in on scroll. */
 export function DividerFlourish({ className = '', width = 220 }) {
   return (
-    <svg
+    <motion.svg
       className={className}
       width={width}
       height="24"
       viewBox="0 0 220 24"
       fill="none"
       aria-hidden="true"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.8 }}
     >
       <g stroke="currentColor" strokeWidth="1" fill="none" strokeLinecap="round">
-        <path d="M2 12h60" opacity="0.5" />
-        <path d="M62 12c6 0 8-5 14-5s8 5 14 5" />
-        <path d="M218 12h-60" opacity="0.5" />
-        <path d="M158 12c-6 0-8-5-14-5s-8 5-14 5" />
-        <circle cx="110" cy="12" r="3" fill="currentColor" fillOpacity="0.3" />
+        <motion.path d="M2 12h60" variants={draw(0.5, 0)} />
+        <motion.path d="M62 12c6 0 8-5 14-5s8 5 14 5" variants={draw(1, 0.15)} />
+        <motion.path d="M218 12h-60" variants={draw(0.5, 0)} />
+        <motion.path d="M158 12c-6 0-8-5-14-5s-8 5-14 5" variants={draw(1, 0.15)} />
+        <motion.circle
+          cx="110"
+          cy="12"
+          r="3"
+          fill="currentColor"
+          fillOpacity="0.3"
+          initial={{ scale: 0 }}
+          whileInView={{ scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5, duration: 0.4, ease: 'backOut' }}
+        />
         <circle cx="96" cy="12" r="1.4" fill="currentColor" />
         <circle cx="124" cy="12" r="1.4" fill="currentColor" />
       </g>
-    </svg>
+    </motion.svg>
   );
 }
 

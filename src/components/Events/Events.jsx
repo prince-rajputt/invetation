@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion';
+import { useRef } from 'react';
+import { motion, useScroll, useSpring, useTransform } from 'framer-motion';
 import { Sun, Flower2, Music, Heart, Sparkles, MapPin, Clock, CalendarDays } from 'lucide-react';
 import { events } from '../../data/events';
 import { assets } from '../../data/assets';
@@ -24,7 +25,7 @@ function EventCard({ event, index }) {
     <Reveal
       y={30}
       delay={(index % 2) * 0.08}
-      className={`group relative overflow-hidden rounded-2xl sm:rounded-3xl border bg-ivory/70 backdrop-blur-sm shadow-soft transition-transform duration-500 hover:-translate-y-1 ${a.ring}`}
+      className={`group relative ml-12 overflow-hidden rounded-2xl border bg-ivory/70 backdrop-blur-sm shadow-soft transition-transform duration-500 hover:-translate-y-1 sm:ml-16 sm:rounded-3xl ${a.ring}`}
     >
       {/* Accent glow on hover */}
       <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-gold-light/10 blur-2xl transition-opacity duration-500 opacity-0 group-hover:opacity-100" />
@@ -65,6 +66,16 @@ function EventCard({ event, index }) {
 }
 
 export default function Events() {
+  const lineRef = useRef(null);
+  // Track scroll through the events timeline so the violet line "draws" downward.
+  const { scrollYProgress } = useScroll({
+    target: lineRef,
+    offset: ['start 0.8', 'end 0.55'],
+  });
+  const grow = useSpring(scrollYProgress, { stiffness: 90, damping: 22, mass: 0.4 });
+  const dotTop = useTransform(grow, [0, 1], ['0%', '100%']);
+  const dotOpacity = useTransform(grow, [0, 0.02, 0.98, 1], [0, 1, 1, 0]);
+
   return (
     <section id="events" className="relative overflow-hidden py-12 sm:py-28">
       {/* Warm diyas backdrop */}
@@ -89,11 +100,39 @@ export default function Events() {
           </p>
         </Reveal>
 
-        <motion.div className="mt-6 space-y-3 sm:mt-14 sm:space-y-6">
-          {events.map((event, i) => (
-            <EventCard key={event.id} event={event} index={i} />
-          ))}
-        </motion.div>
+        <div ref={lineRef} className="relative mt-6 sm:mt-14">
+          {/* Faint base rail (violet) */}
+          <div className="absolute left-6 top-0 h-full w-[2px] -translate-x-1/2 rounded-full bg-gradient-to-b from-transparent via-violet/25 to-transparent sm:left-8" />
+          {/* Animated violet line that draws downward as you scroll */}
+          <motion.div
+            className="absolute left-6 top-0 h-full w-[2px] origin-top -translate-x-1/2 rounded-full sm:left-8"
+            style={{
+              scaleY: grow,
+              background: 'linear-gradient(to bottom, #C7ACDA 0%, #8E6BA8 45%, #5B3E73 100%)',
+              boxShadow: '0 0 10px rgba(142,107,168,0.6)',
+            }}
+          />
+          {/* Glowing leading dot that travels down the line */}
+          <motion.span
+            className="absolute left-6 z-10 h-3.5 w-3.5 -translate-x-1/2 rounded-full border border-white/70 bg-violet sm:left-8"
+            style={{
+              top: dotTop,
+              opacity: dotOpacity,
+              marginTop: '-7px',
+              boxShadow: '0 0 14px 4px rgba(142,107,168,0.75)',
+            }}
+          />
+
+          <motion.div className="space-y-3 sm:space-y-6">
+            {events.map((event, i) => (
+              <div key={event.id} className="relative">
+                {/* Connector dot marking this event on the line */}
+                <span className="absolute left-6 top-8 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-violet bg-ivory shadow-[0_0_10px_rgba(142,107,168,0.55)] sm:left-8" />
+                <EventCard event={event} index={i} />
+              </div>
+            ))}
+          </motion.div>
+        </div>
       </div>
     </section>
   );
