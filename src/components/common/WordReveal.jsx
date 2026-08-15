@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
@@ -27,7 +28,8 @@ export default function WordReveal({ text, className = '', as: Tag = 'h2', delay
     },
   };
 
-  const MotionTag = motion(Tag);
+  // See Reveal.jsx: motion(Tag) must be memoized, not recreated per render.
+  const MotionTag = useMemo(() => motion(Tag), [Tag]);
   return (
     <MotionTag
       className={className}

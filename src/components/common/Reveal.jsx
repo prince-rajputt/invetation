@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '../../hooks/useReducedMotion';
 
@@ -17,7 +18,10 @@ export default function Reveal({
   ...rest
 }) {
   const reduced = useReducedMotion();
-  const MotionTag = motion(Tag);
+  // motion(Tag) must not be recreated every render — a fresh component type
+  // forces React to unmount/remount the whole subtree (e.g. dropping input
+  // focus on every keystroke inside a form wrapped in Reveal).
+  const MotionTag = useMemo(() => motion(Tag), [Tag]);
 
   if (reduced) {
     return (
