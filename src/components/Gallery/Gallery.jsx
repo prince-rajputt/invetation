@@ -1,20 +1,153 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useLayoutEffect, useState, useCallback, useRef } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { gallery } from '../../data/gallery';
 import SectionDivider from '../DecorativeElements/SectionDivider';
 import Reveal from '../common/Reveal';
-import TiltCard from '../Interactions/TiltCard';
+import { useReducedMotion } from '../../hooks/useReducedMotion';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 
-const SPAN = {
-  wide: 'sm:col-span-2',
-  tall: 'row-span-2',
-  normal: '',
-};
+/**
+ * Horizontal scroll gallery, modelled on motion.dev's "scroll horizontal"
+ * example: a tall pinned section whose vertical scroll progress drives a
+ * horizontal translateX across the track, so scrolling down pans the
+ * gallery sideways.
+ */
+function HorizontalTrack({ onOpen }) {
+  const sectionRef = useRef(null);
+  const trackRef = useRef(null);
+  const [scrollRange, setScrollRange] = useState(0);
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      if (!trackRef.current) return;
+      const distance = trackRef.current.scrollWidth - window.innerWidth;
+      setScrollRange(distance > 0 ? distance : 0);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  });
+  const x = useTransform(scrollYProgress, [0, 1], [0, -scrollRange]);
+
+  return (
+    <section
+      ref={sectionRef}
+      className="relative"
+      style={{ height: `calc(100vh + ${scrollRange}px)` }}
+    >
+      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
+        <motion.div ref={trackRef} style={{ x }} className="flex gap-4 px-6 will-change-transform sm:gap-6 sm:px-10">
+          {gallery.map((item, i) => (
+            <button
+              key={item.id}
+              onClick={() => onOpen(i)}
+              className="group relative h-[350px] w-[280px] shrink-0 overflow-hidden rounded-2xl border border-gold/30 shadow-soft sm:h-[500px] sm:w-[400px]"
+              aria-label={`View ${item.caption}`}
+            >
+              <img
+                src={item.src}
+                alt={item.alt}
+                loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-maroon/70 via-maroon/10 to-transparent" />
+              <div className="absolute bottom-0 left-0 p-5">
+                <span className="font-display text-sm text-gold-light/80">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <p className="mt-1 font-script text-2xl italic text-ivory">{item.caption}</p>
+              </div>
+            </button>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Touch-native swipeable carousel used on phones/tablets and whenever
+ * reduced motion is requested. A scroll-jacked pinned track (HorizontalTrack)
+ * fights with vertical touch scrolling and feels janky on mobile browsers,
+ * so small screens get a normal horizontally-scrollable, snap-aligned row
+ * instead — cards peek at the edges to invite swiping.
+ */
+function StaticTrack({ onOpen }) {
+  const trackRef = useRef(null);
+  const [active, setActive] = useState(0);
+
+  const onScroll = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const card = el.firstElementChild;
+    if (!card) return;
+    const step = card.offsetWidth + 16; // matches gap-4
+    setActive(Math.round(el.scrollLeft / step));
+  }, []);
+
+  const scrollToCard = (i) => {
+    const el = trackRef.current;
+    const card = el?.children[i];
+    card?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  };
+
+  return (
+    <div className="mt-2">
+      <p className="mb-3 text-center font-script text-base italic text-ink/50">
+        ← Swipe to explore →
+      </p>
+      <div
+        ref={trackRef}
+        onScroll={onScroll}
+        className="scrollbar-hide flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth px-[11vw] pb-2"
+      >
+        {gallery.map((item, i) => (
+          <button
+            key={item.id}
+            onClick={() => onOpen(i)}
+            className="group relative aspect-[4/5] w-[78vw] max-w-[320px] shrink-0 snap-center overflow-hidden rounded-2xl border border-gold/30 shadow-soft active:scale-[0.98] transition-transform"
+            aria-label={`View ${item.caption}`}
+          >
+            <img src={item.src} alt={item.alt} loading="lazy" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-maroon/70 via-maroon/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 p-4">
+              <span className="font-display text-xs text-gold-light/80">
+                {String(i + 1).padStart(2, '0')}
+              </span>
+              <p className="mt-1 font-script text-xl italic text-ivory">{item.caption}</p>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 flex items-center justify-center gap-2">
+        {gallery.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => scrollToCard(i)}
+            aria-label={`Go to image ${i + 1}`}
+            className={`h-1.5 rounded-full transition-all ${
+              i === active ? 'w-5 bg-gold' : 'w-1.5 bg-gold/30'
+            }`}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function Gallery() {
   const [index, setIndex] = useState(null); // active lightbox index
   const touchStart = useRef(null);
+  const reduced = useReducedMotion();
+  const isMobile = useMediaQuery('(max-width: 767px)');
+  const useStaticTrack = reduced || isMobile;
   const open = index !== null;
 
   const close = useCallback(() => setIndex(null), []);
@@ -56,7 +189,7 @@ export default function Gallery() {
   const active = open ? gallery[index] : null;
 
   return (
-    <section id="gallery" className="relative overflow-hidden py-20 sm:py-28">
+    <section id="gallery" className="relative py-20 sm:py-28">
       <div className="mx-auto max-w-5xl px-6">
         <Reveal className="text-center">
           <p className="eyebrow">Moments &amp; memories</p>
@@ -66,35 +199,9 @@ export default function Gallery() {
             A glimpse of the love, the tradition and the beauty that awaits.
           </p>
         </Reveal>
-
-        <div className="mt-12 grid auto-rows-[180px] grid-cols-2 gap-3 sm:auto-rows-[220px] sm:grid-cols-3 sm:gap-4">
-          {gallery.map((item, i) => (
-            <Reveal
-              as="button"
-              key={item.id}
-              y={30}
-              delay={(i % 3) * 0.05}
-              amount={0.2}
-              onClick={() => setIndex(i)}
-              className={`group relative overflow-hidden rounded-2xl border border-gold/30 shadow-soft ${SPAN[item.span] || ''}`}
-              aria-label={`View ${item.caption}`}
-            >
-              <TiltCard className="h-full w-full" max={6}>
-                <img
-                  src={item.src}
-                  alt={item.alt}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-maroon/60 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                <span className="absolute bottom-3 left-3 translate-y-2 font-script text-lg italic text-ivory opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                  {item.caption}
-                </span>
-              </TiltCard>
-            </Reveal>
-          ))}
-        </div>
       </div>
+
+      {useStaticTrack ? <StaticTrack onOpen={setIndex} /> : <HorizontalTrack onOpen={setIndex} />}
 
       {/* Lightbox */}
       <AnimatePresence>

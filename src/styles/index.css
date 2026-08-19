@@ -36,10 +36,22 @@
     font-weight: 500;
   }
 
-  /* Never allow horizontal scroll on mobile */
+  /* Horizontal scroll is already blocked via body's overflow-x above.
+     #root must NOT set overflow here — it would create a nested scroll
+     container and silently break position: sticky for every descendant
+     (e.g. the Gallery's pinned horizontal-scroll track). */
   #root {
-    overflow-x: hidden;
     position: relative;
+  }
+
+  /* Hides the scrollbar on touch carousels (Gallery mobile track) while
+     keeping the element natively scrollable. */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
   }
 
   ::selection {
