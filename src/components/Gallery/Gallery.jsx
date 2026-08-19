@@ -39,15 +39,15 @@ function HorizontalTrack({ onOpen }) {
     <section
       ref={sectionRef}
       className="relative"
-      style={{ height: `calc(100vh + ${scrollRange}px)` }}
+      style={{ height: `calc(100dvh + ${scrollRange}px)` }}
     >
-      <div className="sticky top-0 flex h-screen items-center overflow-hidden">
-        <motion.div ref={trackRef} style={{ x }} className="flex gap-4 px-6 will-change-transform sm:gap-6 sm:px-10">
+      <div className="sticky top-0 flex h-[100dvh] items-center overflow-hidden">
+        <motion.div ref={trackRef} style={{ x }} className="flex h-full items-center will-change-transform">
           {gallery.map((item, i) => (
             <button
               key={item.id}
               onClick={() => onOpen(i)}
-              className="group relative h-[350px] w-[280px] shrink-0 overflow-hidden rounded-2xl border border-gold/30 shadow-soft sm:h-[500px] sm:w-[400px]"
+              className="group relative h-full w-screen shrink-0 overflow-hidden"
               aria-label={`View ${item.caption}`}
             >
               <img
@@ -57,11 +57,11 @@ function HorizontalTrack({ onOpen }) {
                 className="h-full w-full object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-maroon/70 via-maroon/10 to-transparent" />
-              <div className="absolute bottom-0 left-0 p-5">
+              <div className="absolute bottom-0 left-0 p-6 sm:p-10">
                 <span className="font-display text-sm text-gold-light/80">
                   {String(i + 1).padStart(2, '0')}
                 </span>
-                <p className="mt-1 font-script text-2xl italic text-ivory">{item.caption}</p>
+                <p className="mt-1 font-script text-3xl italic text-ivory sm:text-4xl">{item.caption}</p>
               </div>
             </button>
           ))}
@@ -98,7 +98,7 @@ function StaticTrack({ onOpen }) {
   };
 
   return (
-    <div className="mt-2">
+    <div className="mt-2 pb-20 sm:pb-28">
       <p className="mb-3 text-center font-script text-base italic text-ink/50">
         ← Swipe to explore →
       </p>
@@ -189,7 +189,7 @@ export default function Gallery() {
   const active = open ? gallery[index] : null;
 
   return (
-    <section id="gallery" className="relative py-20 sm:py-28">
+    <section id="gallery" className="relative pt-20 sm:pt-28">
       <div className="mx-auto max-w-5xl px-6">
         <Reveal className="text-center">
           <p className="eyebrow">Moments &amp; memories</p>

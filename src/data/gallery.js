@@ -6,20 +6,6 @@ import { assets } from './assets';
  */
 export const gallery = [
   {
-    id: 'g1',
-    src: assets.images.radhaKrishnaScene,
-    alt: 'Radha and Krishna beneath a garden arch beside a lotus pond',
-    caption: 'Divine Love',
-    span: 'wide',
-  },
-  {
-    id: 'g2',
-    src: assets.images.coupleMandap,
-    alt: 'The bride and groom exchanging garlands under a floral mandap',
-    caption: 'The Vows',
-    span: 'tall',
-  },
-  {
     id: 'g3',
     src: assets.images.galleryCoupleRoses,
     alt: 'A couple sharing a kiss beside a wall of red roses',
